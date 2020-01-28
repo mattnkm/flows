@@ -1,0 +1,110 @@
+```{r}
+setwd('D:/Dropbox/PhD/Network Analysis/OD Matrix/ALL_TABLES/DESTINATION_FLOW/TEST_CHORD')
+
+library(devtools)
+library(tidyverse)
+library(viridis)
+library(patchwork)
+library(hrbrthemes)
+library(circlize)
+library(readxl)
+library(igraph)
+library(ggraph)
+
+list.files()
+
+# Examples
+church_1981 <- read_excel("church_1981.xlsx")
+mosque_1981 <- read_excel("mosque_1981.xlsx")
+church_2011 <- read_excel("church_2011.xlsx")
+temple_2011 <- read_excel("temple_2011.xlsx")
+church_2011 <- read_excel("church_2011.xlsx")
+temple_2011 <- read_excel("temple_2011.xlsx")
+sixthform_1981 <- read_excel("sixthform_1981.xlsx")
+sixthform_2011 <- read_excel("sixthform_2011.xlsx")
+```
+
+#Create the diagrams. These are just examples as it is unsure if data restrictions apply with this respect to this dissemination.
+```{r}
+church_81_df <- data.frame(from = church_1981$origin_mk,
+                           to = church_1981$destination_mk,
+                           value = as.vector(church_1981$flow * 0.09732306),
+                           stringsAsFactors = FALSE)
+
+church_11_df <- data.frame(from = church_2011$origin_mk,
+                           to = church_2011$destination_mk,
+                           value = as.vector(church_2011$flow),
+                           stringsAsFactors = FALSE)
+
+mosque_81_df <- data.frame(from = mosque_1981$origin_mk,
+                           to = mosque_1981$destination_mk,
+                           value = as.vector(mosque_1981$flow) * 0.6340701,
+                           stringsAsFactors = FALSE)
+
+temple_11_df <- data.frame(from = temple_2011$origin_mk,
+                           to = temple_2011$destination_mk,
+                           value = as.vector(temple_2011$flow),
+                           stringsAsFactors = FALSE)
+
+
+sixthform_11_df <- data.frame(from = sixthform_2011$origin_mk,
+                           to = sixthform_2011$destination_mk,
+                           value = as.vector(temple_2011$flow),
+                           stringsAsFactors = FALSE)
+
+religious_colour <- viridis(13, alpha = 1, begin = 0, end = 1, option = "magma")
+
+circos.clear()
+
+chordDiagram(church_81_df,
+             grid.col = religious_colour,
+             transparency = 0.25,
+             directional = 1,
+             direction.type = c("arrows","diffHeight"),
+             diffHeight = -0.04,
+             link.arr.type = "big.arrow",
+             link.sort = TRUE, 
+             link.largest.ontop = TRUE
+             )
+
+circos.clear()
+
+chordDiagram(church_11_df,
+             grid.col = religious_colour,
+             transparency = 0.25,
+             directional = 1,
+             direction.type = c("arrows","diffHeight"),
+             diffHeight = -0.04,
+             link.arr.type = "big.arrow",
+             link.sort = TRUE, 
+             link.largest.ontop = TRUE
+             )
+
+circos.clear()
+
+
+chordDiagram(temple_11_df,
+             grid.col = religious_colour,
+             transparency = 0.25,
+             directional = 1,
+             direction.type = c("arrows","diffHeight"),
+             diffHeight = -0.04,
+             link.arr.type = "big.arrow",
+             link.sort = TRUE, 
+             link.largest.ontop = TRUE)
+
+circos.clear()
+
+chordDiagram(mosque_81_df,
+             grid.col = religious_colour,
+             transparency = 0.25,
+             directional = 1,
+             direction.type = c("arrows","diffHeight"),
+             diffHeight = -0.04,
+             link.arr.type = "big.arrow",
+             link.sort = TRUE, 
+             link.largest.ontop = TRUE)
+
+circos.clear()
+
+```
