@@ -1,2 +1,2 @@
 # flows_diagram
-Data preparation and Diagram Making for Spatial Interaction Flows
+This repo contains a markdown document for creating the visualisation used, i.e. data preparation and diagram making for spatial interaction flows.
