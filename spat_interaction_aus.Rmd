@@ -1,0 +1,89 @@
+```{r}
+library(sf)
+library(tidygraph)
+library(tidyverse)
+library(reshape)
+library(reshape2)
+library(writexl)
+library(readxl)
+```
+
+```{r}
+emp_mat.16 <- read.csv("D:/Users/z3531028/OneDrive - UNSW/Data/Census/2016/Demographic/GS_2016_JourneyToWork.csv")
+emp_mat.16 <- as.matrix(emp_mat.16)
+rownames(emp_mat.16) <- emp_mat.16[,1]
+emp_mat.16 <- emp_mat.16[,2:2234]
+emp_df.16 <- melt(emp_mat.16)
+
+emp_df.16 <- emp_df.16 %>% 
+  dplyr::rename(Origin = Var1,
+         Destination = Var2,
+         Flow = value)
+emp_df.16$Destination <- substring(emp_df.16$Destination,2)
+
+```
+
+```{r}
+sa1_shp <- st_read("D:/Users/z3531028/OneDrive - UNSW/Data/Destination Zone/SA1_Centre_Mass.shp")
+sa1.xy <- as.data.frame(st_coordinates(sa1_shp))
+
+sa1_df <- sa1_shp %>% 
+  select(SA1_7DIG16) %>% 
+  mutate(Origin = SA1_7DIG16,
+    Origin.X = sa1.xy$X,
+         Origin.Y = sa1.xy$Y) %>% 
+  select(-SA1_7DIG16) %>% 
+  st_drop_geometry()
+```
+
+```{r}
+dzn_shp <- st_read("D:/Users/z3531028/OneDrive - UNSW/Data/Destination Zone/DZN_Centre_Mass.shp")
+dzn.xy <- as.data.frame(st_coordinates(dzn_shp))
+
+dzn_df <- dzn_shp %>% 
+  select(DZN_CODE16) %>% 
+  mutate(Destination.X = dzn.xy$X,
+         Destination.Y = dzn.xy$Y) %>% 
+  dplyr::rename(Destination = DZN_CODE16) %>% 
+  st_drop_geometry()
+```
+
+
+
+```{r}
+emp_df.16 <- emp_df.16 %>% 
+  inner_join(sa1_df, by = "Origin") %>% 
+  inner_join(dzn_df, by = "Destination")
+```
+
+```{r}
+emp_df.16$Flow <- as.numeric(emp_df.16$Flow)
+
+Origin_Total <- aggregate(emp_df.16$Flow, by=list(Origin = emp_df.16$Origin), FUN = sum)
+Destination_Total <- aggregate(emp_df.16$Flow, by=list(Destination = emp_df.16$Destination), FUN = sum)
+
+emp_df.16 <- emp_df.16 %>%
+  inner_join(Origin_Total, by = "Origin") %>% 
+  inner_join(Destination_Total, by = "Destination") %>% 
+  dplyr::rename(Origin_Total = x.x,
+                Destination_Total = x.y)
+```
+
+
+```{r}
+occ_mix.16 <- read_xlsx("D:/Users/z3531028/OneDrive - UNSW/Data/Census/2016/Demographic/GS_2016_Occupation_Mix_SA1.xlsx")
+emp_df.16 <- emp_df.16 %>% 
+  inner_join(occ_mix.16, by = "Origin")
+```
+
+```{r}
+TransMode.16 <- read_xlsx("D:/Users/z3531028/OneDrive - UNSW/Data/Census/2016/Demographic/GS_2016_TransportMode.xlsx")
+
+emp_df.16 <- emp_df.16 %>% 
+  inner_join(TransMode.16, by = "Origin")
+```
+
+```{r}
+
+```
+
